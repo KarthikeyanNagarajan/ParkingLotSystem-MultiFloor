@@ -16,14 +16,20 @@ public class ParkingLot
 	private final List<BikeSpot> bikeSpots;
 	private final List<CarSpot> carSpots;
 
-	public static ParkingLot INSTANCE;
+	private static ParkingLot instance;
 
-	public ParkingLot(int numberOfBikeParkingSpots, int numberOfCarParkingSpots)
+	public static ParkingLot getInstance()
+	{
+		if (instance == null)
+			instance = new ParkingLot(10, 10);
+		return instance;
+	}
+
+	private ParkingLot(int numberOfBikeParkingSpots, int numberOfCarParkingSpots)
 	{
 		this.bikeSpots = new ArrayList<>();
 		this.carSpots = new ArrayList<>();
-		initializeParkingSpots(10, 10);
-		INSTANCE = this;
+		initializeParkingSpots(numberOfBikeParkingSpots, numberOfCarParkingSpots);
 	}
 
 	private void initializeParkingSpots(int numberOfBikeParkingSpots, int numberOfCarParkingSpots)

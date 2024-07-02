@@ -13,7 +13,7 @@ public class MainClass
 
 	public static void main(String[] args) throws InterruptedException
 	{
-		ParkingLot parkingLot = new ParkingLot(10, 10);
+		ParkingLot parkingLot = ParkingLot.getInstance();
 
 		Vehicle bike1 = new Bike("BV01XX");
 		Vehicle bike2 = new Bike("BV02XX");

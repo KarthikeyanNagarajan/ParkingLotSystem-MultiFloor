@@ -16,7 +16,7 @@ public class EntryGate
 
 	public Ticket generateTicket(Vehicle vehicle)
 	{
-		ParkingSpot spot = ParkingLot.INSTANCE.findParkingSpot(vehicle);
+		ParkingSpot spot = ParkingLot.getInstance().findParkingSpot(vehicle);
 		spot.assignVehicletoSpot(vehicle);
 		return new Ticket(gateId, spot.getParkingSpotId(), vehicle, new java.util.Date());
 	}

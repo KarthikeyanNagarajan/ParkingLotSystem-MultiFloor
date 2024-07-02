@@ -30,10 +30,10 @@ public class ExitGate
 
 	public void exitVehicle(Ticket ticket, PaymentStrategy pStrategy, PaymentType pType)
 	{
-		long secs = ParkingLot.INSTANCE.getHoursParked(ticket.getDate(), new Date());
+		long secs = ParkingLot.getInstance().getHoursParked(ticket.getDate(), new Date());
 		double amount = makePayment(ticket, pStrategy, pType, secs);
 
-		ParkingSpot spot = ParkingLot.INSTANCE.unParkFromTicket(ticket);
+		ParkingSpot spot = ParkingLot.getInstance().unParkFromTicket(ticket);
 		spot.freeVehiclefromSpot();
 
 		System.out.println("Vehicle with registration " + ticket.getVehicle().getRegistrationNumber() + " at spotNo "
