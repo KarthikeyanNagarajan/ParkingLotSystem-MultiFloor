@@ -4,21 +4,28 @@ import com.karthik.ParkingLotSystem.Vehicle.Vehicle;
 
 public class ParkingSpot
 {
-	private int parkingSpotId;
+	private int floorId;
+	private int spotId;
 	private boolean spotFree;
 	private Vehicle vehicle;
-	private ParkingSpotType parkingSpotType;
+	private ParkingSpotType spotType;
 
-	public ParkingSpot(int parkingSpotId, ParkingSpotType parkingSpotType)
+	public ParkingSpot(int floorId, int spotId, ParkingSpotType spotType)
 	{
-		this.parkingSpotId = parkingSpotId;
-		this.parkingSpotType = parkingSpotType;
+		this.floorId = floorId;
+		this.spotId = spotId;
+		this.spotType =spotType;
 		this.spotFree = true;
 	}
 
-	public int getParkingSpotId()
+	public int getFloorId()
 	{
-		return parkingSpotId;
+		return floorId;
+	}
+
+	public int getSpotId()
+	{
+		return spotId;
 	}
 
 	public boolean isSpotFree()
@@ -37,9 +44,9 @@ public class ParkingSpot
 		this.spotFree = false;
 	}
 
-	public ParkingSpotType getParkingSpotType()
+	public ParkingSpotType getSpotType()
 	{
-		return parkingSpotType;
+		return spotType;
 	}
 
 	public void freeVehiclefromSpot()
@@ -47,5 +54,4 @@ public class ParkingSpot
 		this.vehicle = null;
 		this.spotFree = true;
 	}
-
 }

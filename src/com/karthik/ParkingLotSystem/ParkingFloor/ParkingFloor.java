@@ -1,68 +1,81 @@
 package com.karthik.ParkingLotSystem.ParkingFloor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
+import com.karthik.ParkingLotSystem.ParkingSpot.BikeSpot;
+import com.karthik.ParkingLotSystem.ParkingSpot.CarSpot;
 import com.karthik.ParkingLotSystem.ParkingSpot.ParkingSpot;
-import com.karthik.ParkingLotSystem.ParkingSpot.ParkingSpotType;
-import com.karthik.ParkingLotSystem.Service.ParkingLot;
 import com.karthik.ParkingLotSystem.Vehicle.Vehicle;
-import com.karthik.ParkingLotSystem.Vehicle.VehicleType;
 
 public class ParkingFloor
 {
-	private final String floorId;
-	private Map<ParkingSpotType, List<ParkingSpot>> pSpaces = new HashMap<>();
+	private int floorId;
+	private List<ParkingSpot> parkingSpots;
 
-	public ParkingFloor(String floorId)
+	public ParkingFloor(int floor, int numSpots)
 	{
-		this.floorId = floorId;
-		pSpaces.put(ParkingSpotType.BIKE, new ArrayList<>());
-		pSpaces.put(ParkingSpotType.CAR, new ArrayList<>());
+		this.floorId = floor;
+		parkingSpots = new ArrayList<>(numSpots);
+
+		initializeParkingSpots(numSpots);
 	}
 
-	public void addParkingSpace(ParkingSpot p)
+	private void initializeParkingSpots(int numSpots)
 	{
-		pSpaces.get(p.getParkingSpotType()).add(p);
-	}
+		double spotsForBikes = 0.50;
+		double spotsForCars = 0.50;
 
-	public void removeParkingSpace(ParkingSpot p)
-	{
-		pSpaces.get(p.getParkingSpotType()).remove(p);
-	}
+		int numBikes = (int) (numSpots * spotsForBikes);
+		int numCars = (int) (numSpots * spotsForCars);
 
-	public boolean canParkVehicle(VehicleType vType)
-	{
-		for (ParkingSpot p : pSpaces.get(getSpaceTypeForVehicle(vType)))
+		for (int i = 1; i <= numBikes; i++)
 		{
-			if (p.isSpotFree())
-				return true;
+			parkingSpots.add(new BikeSpot(floorId, i));
 		}
-		return false;
+
+		System.out.println("Created " + numBikes +  " Bike parking spots at floor " + floorId);
+
+		for (int i = numBikes + 1; i <= numSpots; i++)
+		{
+			parkingSpots.add(new CarSpot(floorId, i));
+		}
+		System.out.println("Created " + numCars +  " Car parking spots at floor " + floorId);
 	}
 
-	private ParkingSpotType getSpaceTypeForVehicle(VehicleType vType)
+	public ParkingSpot parkVehicle(Vehicle vehicle)
 	{
-		switch (vType)
+		for (ParkingSpot spot : parkingSpots)
 		{
-		case CAR:
-			return ParkingSpotType.CAR;
-		case BIKE:
-			return ParkingSpotType.BIKE;
-
+			if (spot.isSpotFree() && spot.getSpotType().name().equals(vehicle.getVehicleType().name()))
+			{
+				spot.assignVehicletoSpot(vehicle);
+				return spot;
+			}
 		}
 		return null;
 	}
 
-	public void getSpace(Vehicle v)
+	public boolean unparkVehicle(Vehicle vehicle)
 	{
-		List<ParkingSpot> availableSpaces = new ArrayList<>();
-		for (ParkingSpot p : pSpaces.get(getSpaceTypeForVehicle(v.getVehicleType())))
-			if (p.isSpotFree())
-				availableSpaces.add(p);
-		// return ParkingLot.INSTANCE.getPStrategy().park(availableSpaces);
+		for (ParkingSpot spot : parkingSpots)
+		{
+			if (!spot.isSpotFree() && spot.getVehicle().equals(vehicle))
+			{
+				spot.freeVehiclefromSpot();
+				return true;
+			}
+		}
+		return false;
+	}
 
+	public void displayAvailability()
+	{
+		System.out.println();
+		System.out.println("Level " + floorId + " Display:");
+		for (ParkingSpot spot : parkingSpots)
+		{
+			System.out.println("Spot " + spot.getSpotId() + ": "
+					+ (spot.isSpotFree() ? "Available For" : "Occupied By ") + " " + spot.getSpotType().name());
+		}
 	}
 }

@@ -3,9 +3,9 @@ package com.karthik.ParkingLotSystem.ParkingSpot;
 public class CarSpot extends ParkingSpot
 {
 
-	public CarSpot(int parkingSpotId)
+	public CarSpot(int floorId, int spotId)
 	{
-		super(parkingSpotId, ParkingSpotType.CAR);
+		super(floorId, spotId, ParkingSpotType.CAR);
 	}
 
 }

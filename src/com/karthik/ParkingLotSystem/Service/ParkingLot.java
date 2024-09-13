@@ -1,143 +1,67 @@
 package com.karthik.ParkingLotSystem.Service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import com.karthik.ParkingLotSystem.Exception.InvalidRegistrationNumberException;
-import com.karthik.ParkingLotSystem.Exception.ParkingFullException;
-import com.karthik.ParkingLotSystem.ParkingSpot.BikeSpot;
-import com.karthik.ParkingLotSystem.ParkingSpot.CarSpot;
+import com.karthik.ParkingLotSystem.ParkingFloor.ParkingFloor;
 import com.karthik.ParkingLotSystem.ParkingSpot.ParkingSpot;
 import com.karthik.ParkingLotSystem.Vehicle.Vehicle;
-import com.karthik.ParkingLotSystem.Vehicle.VehicleType;
 
 public class ParkingLot
 {
-	private final List<BikeSpot> bikeSpots;
-	private final List<CarSpot> carSpots;
+	private final List<ParkingFloor> floors;
+
+	private ParkingLot()
+	{
+		this.floors = new ArrayList<>();
+	}
 
 	private static ParkingLot instance;
 
 	public static ParkingLot getInstance()
 	{
 		if (instance == null)
-			instance = new ParkingLot(10, 10);
+			instance = new ParkingLot();
 		return instance;
 	}
 
-	private ParkingLot(int numberOfBikeParkingSpots, int numberOfCarParkingSpots)
+	public void addFloor(ParkingFloor floor)
 	{
-		this.bikeSpots = new ArrayList<>();
-		this.carSpots = new ArrayList<>();
-		initializeParkingSpots(numberOfBikeParkingSpots, numberOfCarParkingSpots);
+		floors.add(floor);
 	}
 
-	private void initializeParkingSpots(int numberOfBikeParkingSpots, int numberOfCarParkingSpots)
+	public ParkingSpot parkVehicle(Vehicle vehicle)
 	{
-
-		for (int i = 1; i <= numberOfBikeParkingSpots; i++)
+		for (ParkingFloor floor : floors)
 		{
-			this.bikeSpots.add(new BikeSpot(i));
-		}
-
-		System.out.printf("Created a two wheeler parking lot with %s slots %n", numberOfBikeParkingSpots);
-
-		for (int i = numberOfBikeParkingSpots + 1; i <= numberOfBikeParkingSpots + numberOfCarParkingSpots; i++)
-		{
-			this.carSpots.add(new CarSpot(i));
-		}
-
-		System.out.printf("Created a four wheeler parking lot with %s slots %n", numberOfCarParkingSpots);
-	}
-
-	public ParkingSpot findParkingSpot(Vehicle vehicle) throws ParkingFullException
-	{
-		ParkingSpot spot;
-		if (vehicle.getVehicleType().name().equals(VehicleType.CAR.name()))
-		{
-			spot = getNextAvailableCarSpot();
-		}
-		else
-		{
-			spot = getNextAvailableBikeSpot();
-		}
-		return spot;
-	}
-
-	private ParkingSpot getNextAvailableCarSpot() throws ParkingFullException
-	{
-		for (ParkingSpot spot : carSpots)
-		{
-			if (spot.isSpotFree())
+			ParkingSpot spot = floor.parkVehicle(vehicle);
+			if (spot != null)
 			{
+				System.out.println("Vehicle parked successfully.");
 				return spot;
 			}
 		}
-		throw new ParkingFullException("No Empty Slot available");
+		System.out.println("Could not park vehicle.");
+		return null;
 	}
 
-	private ParkingSpot getNextAvailableBikeSpot() throws ParkingFullException
+	public boolean unparkVehicle(Ticket ticket)
 	{
-		for (ParkingSpot spot : bikeSpots)
+		for (ParkingFloor floor : floors)
 		{
-			if (spot.isSpotFree())
+			if (floor.unparkVehicle(ticket.getVehicle()))
 			{
-				return spot;
+				return true;
 			}
 		}
-		throw new ParkingFullException("No Empty Slot available");
+		return false;
 	}
 
-	public ParkingSpot getCarSpotByRegistrationNumber(String registrationNumber)
-			throws InvalidRegistrationNumberException
+	public void displayAvailability()
 	{
-		for (ParkingSpot spot : carSpots)
+		for (ParkingFloor floor : floors)
 		{
-			Vehicle vehicle = spot.getVehicle();
-			if (vehicle != null && vehicle.getRegistrationNumber().equals(registrationNumber))
-			{
-				return spot;
-			}
+			floor.displayAvailability();
 		}
-		throw new InvalidRegistrationNumberException(
-				"Bike with registration number " + registrationNumber + " not found");
+		System.out.println();
 	}
-
-	public ParkingSpot getBikeSpotByRegistrationNumber(String registrationNumber)
-			throws InvalidRegistrationNumberException
-	{
-		for (ParkingSpot spot : bikeSpots)
-		{
-			Vehicle vehicle = spot.getVehicle();
-			if (vehicle != null && vehicle.getRegistrationNumber().equals(registrationNumber))
-			{
-				return spot;
-			}
-		}
-		throw new InvalidRegistrationNumberException(
-				"Car with registration number " + registrationNumber + " not found");
-	}
-
-	public ParkingSpot unParkFromTicket(Ticket ticket)
-	{
-		ParkingSpot spot;
-		if (ticket.getVehicle().getVehicleType().name().equals(VehicleType.CAR.name()))
-		{
-			spot = getCarSpotByRegistrationNumber(ticket.getVehicle().getRegistrationNumber());
-		}
-		else
-		{
-			spot = getBikeSpotByRegistrationNumber(ticket.getVehicle().getRegistrationNumber());
-		}
-		return spot;
-	}
-
-	public long getHoursParked(Date startDate, Date endDate)
-	{
-		long secs = (endDate.getTime() - startDate.getTime()) / 1000;
-		// int hours = (int) (secs / 3600);
-		// return hours;
-		return secs;
-	}
-
 }
